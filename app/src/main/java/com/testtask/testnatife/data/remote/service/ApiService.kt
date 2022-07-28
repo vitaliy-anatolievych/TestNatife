@@ -28,8 +28,8 @@ interface ApiService {
     fun getImages(
         @Query(TOKEN) token: String,
         @Query(QUERY) query: String,
-        @Query(LIMIT) limit: String,
-        @Query(OFFSET) offset: String,
+        @Query(LIMIT) limit: Int,
+        @Query(OFFSET) offset: Int,
         @Query(RATING) rating: String,
         @Query(LANG) lang: String
     ): Call<ImageResponse>

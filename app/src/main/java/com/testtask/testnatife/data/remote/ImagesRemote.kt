@@ -9,8 +9,8 @@ interface ImagesRemote {
     fun getImages(
         token: String,
         query: String,
-        limit: String,
-        offset: String,
+        limit: Int,
+        offset: Int,
         rating: String,
         lang: String
     ): Either<Failure, List<ImageEntity>>
