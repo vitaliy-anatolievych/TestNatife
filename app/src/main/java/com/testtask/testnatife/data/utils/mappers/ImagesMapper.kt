@@ -9,11 +9,11 @@ object ImagesMapper {
 
     fun mapImageResponseToImageEntity(response: ImageResponse): List<ImageEntity> {
         return mutableListOf<ImageEntity>().apply {
-            response.images?.map {
+            response.data?.map {
                 this.add(
                     ImageEntity(
-                        id = response.id,
-                        imageUrl = it.original?.url
+                        id = it.id,
+                        imageUrl = it.images?.original?.url
                     )
                 )
             }
