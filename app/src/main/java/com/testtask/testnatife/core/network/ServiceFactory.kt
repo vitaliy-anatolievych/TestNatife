@@ -11,8 +11,6 @@ import java.util.concurrent.TimeUnit
 
 object ServiceFactory {
 
-    const val TOKEN = BuildConfig.GIPHY_KEY
-
     private const val URL = BuildConfig.API_ENDPOINT
 
     fun <S>makeService(isDebug: Boolean, api: Class<S>): S {
