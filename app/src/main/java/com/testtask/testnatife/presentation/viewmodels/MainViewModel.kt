@@ -32,4 +32,9 @@ class MainViewModel @Inject constructor(
     private fun handleImages(images: List<ImageModel>) {
         _imagesData.value = images
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        getImagesUseCase.unsubscribe()
+    }
 }
