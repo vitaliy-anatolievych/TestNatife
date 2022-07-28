@@ -1,4 +1,4 @@
-package com.testtask.testnatife.data.network.responces
+package com.testtask.testnatife.data.network.responses
 
 import com.testtask.testnatife.data.entity.Images
 
