@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.testtask.testnatife.R
 import com.testtask.testnatife.di.DaggerAppComponent
 import com.testtask.testnatife.presentation.contracts.Navigator
+import com.testtask.testnatife.presentation.screens.MainScreenFragment
 
 class MainActivity : AppCompatActivity(), Navigator {
 
@@ -17,7 +18,7 @@ class MainActivity : AppCompatActivity(), Navigator {
     }
 
     override fun goToMainScreen() {
-
+        launchFragment(MainScreenFragment.newInstance(), false)
     }
 
     private fun launchFragment(fragment: Fragment, isAddToBackStack: Boolean) {
