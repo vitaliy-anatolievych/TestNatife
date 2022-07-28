@@ -2,6 +2,7 @@ package com.testtask.testnatife.data.utils.mappers
 
 import com.testtask.testnatife.data.entity.ImageEntity
 import com.testtask.testnatife.data.network.responses.ImageResponse
+import com.testtask.testnatife.domain.models.ImageModel
 
 object ImagesMapper {
 
@@ -17,6 +18,16 @@ object ImagesMapper {
                 )
             }
         }
+    }
 
+    fun mapListImageEntityToListImageModel(imageEntity: List<ImageEntity>): List<ImageModel> {
+        return mutableListOf<ImageModel>().apply {
+            imageEntity.map {
+                this.add(ImageModel(
+                    it.id,
+                    it.imageUrl
+                ))
+            }
+        }
     }
 }
