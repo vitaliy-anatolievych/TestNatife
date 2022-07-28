@@ -30,10 +30,14 @@ class ImagesRepositoryImpl @Inject constructor(
             lang = lang
         )
 
-        return  when(response) {
+        return when(response) {
             is Either.Left -> response
             is Either.Right -> {
-                response.right(ImagesMapper.mapListImageEntityToListImageModel(response.b))
+                return if (response.b.isEmpty()) {
+                    Either.Left(Failure.ListEmpty)
+                } else {
+                    response.right(ImagesMapper.mapListImageEntityToListImageModel(response.b))
+                }
             }
         }
     }
