@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TestNatife</string>
+    <string name="network_connection_error">Проверьте подключение к Интернету</string>
+    <string name="server_error">Ошибка сервера</string>
 </resources>

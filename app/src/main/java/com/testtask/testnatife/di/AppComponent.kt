@@ -1,18 +1,19 @@
 package com.testtask.testnatife.di
 
 import android.app.Application
-import com.testtask.testnatife.presentation.MainActivity
+import com.testtask.testnatife.presentation.core.BaseFragment
 import dagger.BindsInstance
 import dagger.Component
+import javax.inject.Singleton
 
-@ApplicationScope
+@Singleton
 @Component(
     modules =
         [ViewModelModule::class]
 )
 interface AppComponent {
 
-    fun inject(activity: MainActivity)
+    fun inject(fragment: BaseFragment)
 
     @Component.Factory
     interface Factory {
