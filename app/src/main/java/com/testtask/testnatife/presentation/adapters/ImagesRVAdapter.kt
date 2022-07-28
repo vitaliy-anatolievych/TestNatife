@@ -3,6 +3,7 @@ package com.testtask.testnatife.presentation.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -23,6 +24,12 @@ class ImagesRVAdapter:
                 .load(image.imageUrl)
                 .centerCrop()
                 .into(ivImageItem)
+
+            ivImageItem.setOnLongClickListener {
+                if (!imbDeleteImage.isVisible) imbDeleteImage.visibility = View.VISIBLE
+                else imbDeleteImage.visibility = View.GONE
+                return@setOnLongClickListener true
+            }
         }
     }
 
