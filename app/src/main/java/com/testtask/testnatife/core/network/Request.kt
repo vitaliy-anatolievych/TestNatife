@@ -41,13 +41,18 @@ private fun <T> Response<T>.isSucceed(): Boolean {
 }
 
 private fun <T> Response<T>.parseError(): Failure {
-    val gson = Gson()
-    val jsonObject = JSONObject(errorBody()!!.string())
-    val errorResponse: ErrorResponse = gson.fromJson(jsonObject.toString(), ErrorResponse::class.java)
+    return try {
+        val gson = Gson()
+        val jsonObject = JSONObject(errorBody()!!.string())
+        val errorResponse = gson.fromJson(jsonObject.toString(), ErrorResponse::class.java)
 
-    Log.e("ERROR_MESSAGE", errorResponse.message)
-    return when (errorResponse.message) {
-        // Validation
-        else -> Failure.ServerError
+        Log.e("ERROR_MESSAGE", errorResponse.message)
+        when (errorResponse.message) {
+            // Validation
+            else -> Failure.ServerError
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Failure.ServerError
     }
 }
