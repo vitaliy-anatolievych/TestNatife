@@ -36,7 +36,7 @@ class Request @Inject constructor(private val networkHandler: NetworkHandler) {
 }
 
 private fun <T> Response<T>.isSucceed(): Boolean {
-    Log.e("ERROR_CODE", "is 200.299?: ${code() !in 200..299}")
+    Log.e("ERROR_CODE", "is 200.299?: ${code() in 200..299}")
     return isSuccessful && body() != null && code() in 200..299
 }
 
