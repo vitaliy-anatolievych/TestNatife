@@ -5,4 +5,6 @@
     <string name="error_list_is_empty">Изображение по заданному запросу не найдены</string>
     <string name="search_gif_hint">Введите слово для поиска GIF</string>
     <string name="description_gif_images">Изображения gif</string>
+    <string name="load_error">Click to try load again</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
 </resources>

@@ -1,26 +1,26 @@
 package com.testtask.testnatife.presentation.adapters
 
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.module.LoadMoreModule
+import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.testtask.testnatife.R
 import com.testtask.testnatife.databinding.ImageItemBinding
 import com.testtask.testnatife.domain.models.ImageModel
-import com.testtask.testnatife.presentation.adapters.diffutils.ImageListDiffCallBack
 
 class ImagesRVAdapter:
-    ListAdapter<ImageModel, ImagesRVAdapter.ImagesVewHolder>(ImageListDiffCallBack()) {
+    BaseQuickAdapter<ImageModel, ImagesRVAdapter.ImagesVewHolder>(R.layout.image_item), LoadMoreModule {
 
-
-    inner class ImagesVewHolder(view: View): RecyclerView.ViewHolder(view) {
+    inner class ImagesVewHolder(view: View): BaseViewHolder(view) {
         private val binding = ImageItemBinding.bind(view)
 
+        // сделай прелоад
+        //
         fun bind(image: ImageModel) = with(binding){
             Glide.with(binding.ivImageItem)
+                .asGif()
                 .load(image.imageUrl)
                 .centerCrop()
                 .into(ivImageItem)
@@ -33,12 +33,16 @@ class ImagesRVAdapter:
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImagesVewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.image_item, parent, false)
-        return ImagesVewHolder(view)
+    override fun setDiffNewData(list: MutableList<ImageModel>?, commitCallback: Runnable?) {
+        list?.let {
+            val newList = data.apply {
+                this.addAll(list)
+            }
+            super.setDiffNewData(newList, commitCallback)
+        }
     }
 
-    override fun onBindViewHolder(holder: ImagesVewHolder, position: Int) {
-        holder.bind(getItem(position))
+    override fun convert(holder: ImagesVewHolder, item: ImageModel) {
+        holder.bind(item)
     }
 }

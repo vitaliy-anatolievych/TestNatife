@@ -15,17 +15,30 @@ class MainViewModel @Inject constructor(
     val imagesData: LiveData<List<ImageModel>>
         get() = _imagesData
 
+    private val _currentQuery = MutableLiveData<String>()
+
     fun getImages(query: String) {
+        isNextData(query) // Если у нас новый запрос, сбросит значение offset
+
         getImagesUseCase(
             GetImages.Params(
                query = query,
-                limit = 20,
-                offset = 0,
+                limit = IMAGES_COUNT,
+                offset = IMAGES_COUNT * PAGE_ITERATOR,
                 rating = "g",
                 lang = "uk"
             )
         ) {
             it.either(::handleFailure, ::handleImages)
+        }
+    }
+
+    private fun isNextData(query: String) {
+        if (query == _currentQuery.value) {
+            PAGE_ITERATOR++
+        } else {
+            PAGE_ITERATOR = 0
+            _currentQuery.value = query
         }
     }
 
@@ -36,5 +49,10 @@ class MainViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         getImagesUseCase.unsubscribe()
+    }
+
+    companion object {
+        private const val IMAGES_COUNT = 10
+        private var PAGE_ITERATOR = 0
     }
 }

@@ -14,6 +14,8 @@ import com.testtask.testnatife.core.viewmodels.onSuccess
 import com.testtask.testnatife.databinding.FragmentMainScreenBinding
 import com.testtask.testnatife.domain.models.ImageModel
 import com.testtask.testnatife.presentation.adapters.ImagesRVAdapter
+import com.testtask.testnatife.presentation.adapters.diffutils.ImageListDiffCallBack
+import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
 import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.viewmodels.MainViewModel
 
@@ -67,24 +69,69 @@ class MainScreenFragment: BaseFragment() {
 
     private fun settingsAdapter() {
         imageAdapter = ImagesRVAdapter()
+        imageAdapter.setDiffCallback(ImageListDiffCallBack())
         binding.rvMainScreen.adapter = imageAdapter
+
+        imageAdapter.loadMoreModule.loadMoreView = LoadMoreViewVertical()
+        imageAdapter.loadMoreModule.preLoadNumber = COUNT_OF_PRELOAD_IMAGES
+        imageAdapter.loadMoreModule.isAutoLoadMore = true
+        imageAdapter.loadMoreModule.setOnLoadMoreListener { loadMore() }
     }
 
     private fun handleImages(images: List<ImageModel>?) {
+        Log.e("IMAGES", "${images?.size}")
         Log.e("IMAGES", "$images")
-         imageAdapter.submitList(images)
+
+        images?.let { newList->
+            imageAdapter.setDiffNewData(newList.toMutableList())
+            sayAdapterLoadDataSuccessful()
+        }
+
+    }
+
+    private fun loadMore() = with(binding){
+        mainViewModel.getImages(etSearchImage.text.toString())
     }
 
     override fun handleFailure(failure: Failure?) {
-        super.handleFailure(failure)
         when(failure) {
-            Failure.ListEmpty -> Toast.makeText(
+            is Failure.NetworkConnectionError -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.network_connection_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                sayAdapterLoadDataFailure()
+            }
+            is Failure.ServerError -> Toast.makeText(
+                requireContext(),
+                getString(R.string.server_error),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            is Failure.ListEmpty -> Toast.makeText(
                 requireContext(), getString(R.string.error_list_is_empty),
                 Toast.LENGTH_SHORT).show()
+            else -> {
+                Toast.makeText(
+                    requireContext(), getString(R.string.unknown_error),
+                    Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
+    private fun sayAdapterLoadDataSuccessful() {
+        imageAdapter.loadMoreModule.isEnableLoadMore = true
+        imageAdapter.loadMoreModule.loadMoreComplete()
+    }
+
+    private fun sayAdapterLoadDataFailure() {
+        imageAdapter.loadMoreModule.loadMoreFail()
+    }
+
     companion object {
+        private const val COUNT_OF_PRELOAD_IMAGES = 10
 
         @JvmStatic
         fun newInstance(): MainScreenFragment = MainScreenFragment()
