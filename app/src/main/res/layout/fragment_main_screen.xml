@@ -19,13 +19,27 @@
         android:minHeight="48dp"
         android:autofillHints="" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_main_screen"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/description_gif_images"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        tools:listitem="@layout/image_item" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_main_screen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/description_gif_images"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/image_item" />
+
+        <ProgressBar
+            android:id="@+id/pb_state_load"
+            style="?android:attr/progressBarStyle"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
 
 </LinearLayout>

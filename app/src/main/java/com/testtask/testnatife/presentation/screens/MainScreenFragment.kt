@@ -62,6 +62,7 @@ class MainScreenFragment: BaseFragment() {
             when(actionId) {
                 EditorInfo.IME_ACTION_SEARCH -> {
                     if (textView.text.isNotEmpty()) {
+                        showLoadProgress(isStateLoad = true)
                         mainViewModel.getImages(textView.text.toString())
                     }
                 }
@@ -84,6 +85,8 @@ class MainScreenFragment: BaseFragment() {
     private fun handleImages(images: List<ImageModel>?) {
         Log.e("IMAGES", "${images?.size}")
         Log.e("IMAGES", "$images")
+
+        showLoadProgress(isStateLoad = false)
 
         images?.let { newList->
             GlidePreload.preloadImages(requireContext(), newList) { isLoaded ->
@@ -148,6 +151,11 @@ class MainScreenFragment: BaseFragment() {
 
     private fun sayAdapterLoadDataFailure() {
         imageAdapter.loadMoreModule.loadMoreFail()
+        showLoadProgress(isStateLoad = false)
+    }
+
+    private fun showLoadProgress(isStateLoad: Boolean) {
+        binding.pbStateLoad.visibility = if (isStateLoad) View.VISIBLE else View.GONE
     }
 
     companion object {
