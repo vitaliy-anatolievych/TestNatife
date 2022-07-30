@@ -11,10 +11,13 @@ import com.testtask.testnatife.domain.models.ImageModel
 
 object GlidePreload {
 
+    @Volatile
+    private var downloadedImages = 0
+
     fun preloadImages(context: Context, list: List<ImageModel>, isLoaded: (Boolean) -> Unit) {
-        Thread {
-            var downloadedImages = 0
-            list.forEach {image ->
+
+        list.forEach { image ->
+            Thread {
                 Glide.with(context)
                     .asGif()
                     .load(image.imageUrl)
@@ -42,7 +45,7 @@ object GlidePreload {
                             return false
                         }
                     }).preload()
-            }
-        }.run()
+            }.run()
+        }
     }
 }
