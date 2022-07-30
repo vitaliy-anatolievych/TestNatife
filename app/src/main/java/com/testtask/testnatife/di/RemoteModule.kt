@@ -1,6 +1,5 @@
 package com.testtask.testnatife.di
 
-import com.testtask.testnatife.BuildConfig
 import com.testtask.testnatife.core.network.Request
 import com.testtask.testnatife.core.network.ServiceFactory
 import com.testtask.testnatife.data.remote.ImagesRemote
@@ -16,7 +15,7 @@ class RemoteModule {
     @Singleton
     @Provides
     fun provideApiService(): ApiService =
-        ServiceFactory.makeService(BuildConfig.DEBUG, ApiService::class.java)
+        ServiceFactory.makeService(false, ApiService::class.java)
 
     @Singleton
     @Provides
