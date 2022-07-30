@@ -61,7 +61,8 @@ class MainScreenFragment: BaseFragment() {
         binding.etSearchImage.setOnEditorActionListener { textView, actionId, _ ->
             when(actionId) {
                 EditorInfo.IME_ACTION_SEARCH -> {
-                    if (textView.text.isNotEmpty()) {
+                    val query = textView.text.toString()
+                    if (isNewQueryValid(query)) {
                         showLoadProgress(isStateLoad = true)
                         mainViewModel.getImages(textView.text.toString())
                     }
@@ -70,6 +71,9 @@ class MainScreenFragment: BaseFragment() {
             return@setOnEditorActionListener true
         }
     }
+
+    private fun isNewQueryValid(query: String) =
+        (query.isNotEmpty() && mainViewModel.currentQuery != query)
 
     private fun settingsAdapter() {
         imageAdapter = ImagesRVAdapter()
@@ -86,11 +90,10 @@ class MainScreenFragment: BaseFragment() {
         Log.e("IMAGES", "${images?.size}")
         Log.e("IMAGES", "$images")
 
-        showLoadProgress(isStateLoad = false)
-
         images?.let { newList->
             GlidePreload.preloadImages(requireContext(), newList) { isLoaded ->
                 if (isLoaded) {
+                    showLoadProgress(isStateLoad = false)
                     // TODO Остался баг с обновлением списка
                     val linkedList = mutableListOf<ImageRVModel>()
                     linkedList.addAll(imageAdapter.data)
@@ -100,7 +103,6 @@ class MainScreenFragment: BaseFragment() {
                 }
             }
         }
-
     }
 
     private fun loadMore() = with(binding){

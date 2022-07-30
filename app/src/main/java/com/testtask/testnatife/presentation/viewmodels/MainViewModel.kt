@@ -16,6 +16,8 @@ class MainViewModel @Inject constructor(
         get() = _imagesData
 
     private val _currentQuery = MutableLiveData<String>()
+    val currentQuery: String
+        get() = _currentQuery.value ?: ""
 
     fun getImages(query: String) {
         isNextData(query) // Если у нас новый запрос, сбросит значение offset
