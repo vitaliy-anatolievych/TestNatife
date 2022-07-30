@@ -16,11 +16,8 @@ class ImagesRVAdapter:
     inner class ImagesVewHolder(view: View): BaseViewHolder(view) {
         private val binding = ImageItemBinding.bind(view)
 
-        // сделай прелоад
-        //
         fun bind(image: ImageModel) = with(binding){
             Glide.with(binding.ivImageItem)
-                .asGif()
                 .load(image.imageUrl)
                 .centerCrop()
                 .into(ivImageItem)
@@ -30,15 +27,6 @@ class ImagesRVAdapter:
                 else imbDeleteImage.visibility = View.GONE
                 return@setOnLongClickListener true
             }
-        }
-    }
-
-    override fun setDiffNewData(list: MutableList<ImageModel>?, commitCallback: Runnable?) {
-        list?.let {
-            val newList = data.apply {
-                this.addAll(list)
-            }
-            super.setDiffNewData(newList, commitCallback)
         }
     }
 

@@ -15,6 +15,7 @@ import com.testtask.testnatife.databinding.FragmentMainScreenBinding
 import com.testtask.testnatife.domain.models.ImageModel
 import com.testtask.testnatife.presentation.adapters.ImagesRVAdapter
 import com.testtask.testnatife.presentation.adapters.diffutils.ImageListDiffCallBack
+import com.testtask.testnatife.presentation.adapters.utils.GlidePreload
 import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
 import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.viewmodels.MainViewModel
@@ -83,8 +84,16 @@ class MainScreenFragment: BaseFragment() {
         Log.e("IMAGES", "$images")
 
         images?.let { newList->
-            imageAdapter.setDiffNewData(newList.toMutableList())
-            sayAdapterLoadDataSuccessful()
+            GlidePreload.preloadImages(requireContext(), newList) { isLoaded ->
+                if (isLoaded) {
+                    // TODO Остался баг с обновлением списка
+                    val linkedList = mutableListOf<ImageModel>()
+                    linkedList.addAll(imageAdapter.data)
+                    linkedList.addAll(newList)
+                    imageAdapter.setDiffNewData(linkedList.toMutableList())
+                    sayAdapterLoadDataSuccessful()
+                }
+            }
         }
 
     }
@@ -104,19 +113,28 @@ class MainScreenFragment: BaseFragment() {
 
                 sayAdapterLoadDataFailure()
             }
-            is Failure.ServerError -> Toast.makeText(
-                requireContext(),
-                getString(R.string.server_error),
-                Toast.LENGTH_SHORT
-            ).show()
+            is Failure.ServerError -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.server_error),
+                    Toast.LENGTH_SHORT
+                ).show()
 
-            is Failure.ListEmpty -> Toast.makeText(
-                requireContext(), getString(R.string.error_list_is_empty),
-                Toast.LENGTH_SHORT).show()
+                sayAdapterLoadDataFailure()
+            }
+
+            is Failure.ListEmpty -> {
+                Toast.makeText(
+                    requireContext(), getString(R.string.error_list_is_empty),
+                    Toast.LENGTH_SHORT).show()
+                sayAdapterLoadDataFailure()
+            }
             else -> {
                 Toast.makeText(
                     requireContext(), getString(R.string.unknown_error),
                     Toast.LENGTH_SHORT).show()
+
+                sayAdapterLoadDataFailure()
             }
         }
     }
