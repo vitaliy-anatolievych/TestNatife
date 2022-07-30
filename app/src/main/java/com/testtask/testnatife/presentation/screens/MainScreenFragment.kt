@@ -15,8 +15,10 @@ import com.testtask.testnatife.databinding.FragmentMainScreenBinding
 import com.testtask.testnatife.domain.models.ImageModel
 import com.testtask.testnatife.presentation.adapters.ImagesRVAdapter
 import com.testtask.testnatife.presentation.adapters.diffutils.ImageListDiffCallBack
+import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 import com.testtask.testnatife.presentation.adapters.utils.GlidePreload
 import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
+import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
 import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.viewmodels.MainViewModel
 
@@ -87,9 +89,9 @@ class MainScreenFragment: BaseFragment() {
             GlidePreload.preloadImages(requireContext(), newList) { isLoaded ->
                 if (isLoaded) {
                     // TODO Остался баг с обновлением списка
-                    val linkedList = mutableListOf<ImageModel>()
+                    val linkedList = mutableListOf<ImageRVModel>()
                     linkedList.addAll(imageAdapter.data)
-                    linkedList.addAll(newList)
+                    linkedList.addAll(RVAdapterMapper.mapListImageModelToListImageRVModel(newList))
                     imageAdapter.setDiffNewData(linkedList.toMutableList())
                     sayAdapterLoadDataSuccessful()
                 }
