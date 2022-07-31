@@ -15,4 +15,6 @@ class ImagesCacheImpl @Inject constructor(
         dao.addImageToBlackList(imageEntity)
         return Either.Right(None())
     }
+
+    override fun getBlackList(): List<ImageEntity> = dao.getBlackList()
 }

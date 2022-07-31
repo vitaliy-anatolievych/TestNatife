@@ -4,6 +4,7 @@ import com.testtask.testnatife.BuildConfig
 import com.testtask.testnatife.core.type.Either
 import com.testtask.testnatife.core.type.Failure
 import com.testtask.testnatife.core.type.None
+import com.testtask.testnatife.data.entity.ImageEntity
 import com.testtask.testnatife.data.local.ImagesCache
 import com.testtask.testnatife.data.remote.ImagesRemote
 import com.testtask.testnatife.data.utils.mappers.ImagesMapper
@@ -39,7 +40,14 @@ class ImagesRepositoryImpl @Inject constructor(
                 return if (response.b.isEmpty()) {
                     Either.Left(Failure.ListEmpty)
                 } else {
-                    response.right(ImagesMapper.mapListImageEntityToListImageModel(response.b))
+
+                    val blackList = imagesCache.getBlackList()
+                    val imageModelList =
+                        ImagesMapper.mapListImageEntityToListImageModel(response.b).toMutableList()
+
+                    checkListOnBlackListElements(blackList, imageModelList)
+
+                    response.right(imageModelList)
                 }
             }
         }
@@ -48,4 +56,17 @@ class ImagesRepositoryImpl @Inject constructor(
     override fun addImageToBlackList(imageModel: ImageModel) : Either<Failure, None> =
         imagesCache.addToBlackList(ImagesMapper.mapImageModelToImageEntity(imageModel))
 
+    private fun checkListOnBlackListElements(
+        blackList: List<ImageEntity>,
+        imageModelList: MutableList<ImageModel>
+    ) {
+        val iterable = imageModelList.toList()
+        blackList.forEach { blackListEntity ->
+            iterable.forEachIndexed { index, imageModel ->
+                if (blackListEntity.id == imageModel.id) {
+                    imageModelList.removeAt(index)
+                }
+            }
+        }
+    }
 }

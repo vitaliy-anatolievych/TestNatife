@@ -8,4 +8,6 @@ import com.testtask.testnatife.data.entity.ImageEntity
 interface ImagesCache {
 
     fun addToBlackList(imageEntity: ImageEntity): Either<Failure, None>
+
+    fun getBlackList(): List<ImageEntity>
 }
