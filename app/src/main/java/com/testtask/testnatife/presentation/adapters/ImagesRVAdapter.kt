@@ -13,7 +13,8 @@ import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 class ImagesRVAdapter:
     BaseQuickAdapter<ImageRVModel, ImagesRVAdapter.ImagesVewHolder>(R.layout.image_item), LoadMoreModule {
 
-    var deleteImage: ((ImageRVModel) -> Unit)? = null
+    private var deleteImage: ((ImageRVModel) -> Unit)? = null
+    private var onImageClicked: ((ImageRVModel) -> Unit)? = null
 
     inner class ImagesVewHolder(view: View): BaseViewHolder(view) {
         private val binding = ImageItemBinding.bind(view)
@@ -34,6 +35,10 @@ class ImagesRVAdapter:
                     setItemStatus(isSelected = false, image)
                 }
                 return@setOnLongClickListener true
+            }
+
+            ivImageItem.setOnClickListener {
+                onImageClicked?.invoke(image)
             }
 
             imbDeleteImage.setOnClickListener {
@@ -58,6 +63,14 @@ class ImagesRVAdapter:
                 imbDeleteImage.visibility = View.GONE
             }
         }
+    }
+
+    fun onImageClicked(listener: (ImageRVModel) -> Unit) {
+        this.onImageClicked = listener
+    }
+
+    fun deleteImage(listener: (ImageRVModel) -> Unit) {
+        this.deleteImage = listener
     }
 
     override fun convert(holder: ImagesVewHolder, item: ImageRVModel) {

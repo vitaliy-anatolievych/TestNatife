@@ -20,6 +20,7 @@ import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 import com.testtask.testnatife.presentation.adapters.utils.GlidePreload
 import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
 import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
+import com.testtask.testnatife.presentation.contracts.navigator
 import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.viewmodels.MainViewModel
 
@@ -89,7 +90,8 @@ class MainScreenFragment : BaseFragment() {
         imageAdapter.loadMoreModule.preLoadNumber = COUNT_OF_PRELOAD_IMAGES
         imageAdapter.loadMoreModule.isAutoLoadMore = true
         imageAdapter.loadMoreModule.setOnLoadMoreListener { loadMore() }
-        imageAdapter.deleteImage = { addToBlackList(image = it) }
+        imageAdapter.deleteImage {  addToBlackList(image = it) }
+        imageAdapter.onImageClicked { openImageFullSize(image = it) }
     }
 
     private fun handleImages(images: List<ImageModel>?) {
@@ -117,6 +119,10 @@ class MainScreenFragment : BaseFragment() {
             getString(R.string.image_added_to_black_list),
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    private fun openImageFullSize(image: ImageRVModel) {
+        navigator().goToFullScreenImage(image)
     }
 
     private fun addToBlackList(image: ImageRVModel) {
