@@ -4,14 +4,18 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.testtask.testnatife.data.entity.ImageBlockEntity
 import com.testtask.testnatife.data.entity.ImageEntity
 
 @Dao
 interface ImagesStorageDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addImageToBlackList(imageEntity: ImageEntity)
+    fun addImageToBlackList(imageBlockEntity: ImageBlockEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addImageToCache(imageEntity: List<ImageEntity>)
 
     @Query("SELECT * FROM black_list")
-    fun getBlackList(): List<ImageEntity>
+    fun getBlackList(): List<ImageBlockEntity>
 }

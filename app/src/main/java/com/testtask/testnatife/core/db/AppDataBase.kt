@@ -4,10 +4,11 @@ import android.app.Application
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.testtask.testnatife.data.entity.ImageBlockEntity
 import com.testtask.testnatife.data.entity.ImageEntity
 import com.testtask.testnatife.data.local.storages.room.ImagesStorageDao
 
-@Database(entities = [ImageEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ImageEntity::class, ImageBlockEntity::class], version = 1, exportSchema = false)
 abstract class AppDataBase: RoomDatabase() {
 
     abstract fun blackListDao(): ImagesStorageDao

@@ -4,6 +4,7 @@ import com.testtask.testnatife.BuildConfig
 import com.testtask.testnatife.core.type.Either
 import com.testtask.testnatife.core.type.Failure
 import com.testtask.testnatife.core.type.None
+import com.testtask.testnatife.data.entity.ImageBlockEntity
 import com.testtask.testnatife.data.entity.ImageEntity
 import com.testtask.testnatife.data.local.ImagesCache
 import com.testtask.testnatife.data.remote.ImagesRemote
@@ -41,12 +42,22 @@ class ImagesRepositoryImpl @Inject constructor(
                     Either.Left(Failure.ListEmpty)
                 } else {
 
-                    val blackList = imagesCache.getBlackList()
+                    // get black images list
+                    val blackList
+                    = imagesCache.getBlackList()
+
+                    // doing clean response images list
+                    val clearedList
+                    = checkListOnBlackListElements(blackList, response.b.toMutableList())
+
+                    // add to local cache
+                    imagesCache.addImagesToCache(clearedList)
+
+                    // mapping for domain model
                     val imageModelList =
-                        ImagesMapper.mapListImageEntityToListImageModel(response.b).toMutableList()
+                        ImagesMapper.mapListImageEntityToListImageModel(clearedList)
 
-                    checkListOnBlackListElements(blackList, imageModelList)
-
+                    // return
                     response.right(imageModelList)
                 }
             }
@@ -54,19 +65,20 @@ class ImagesRepositoryImpl @Inject constructor(
     }
 
     override fun addImageToBlackList(imageModel: ImageModel) : Either<Failure, None> =
-        imagesCache.addToBlackList(ImagesMapper.mapImageModelToImageEntity(imageModel))
+        imagesCache.addToBlackList(ImagesMapper.mapImageModelToImageBlockEntity(imageModel))
 
     private fun checkListOnBlackListElements(
-        blackList: List<ImageEntity>,
-        imageModelList: MutableList<ImageModel>
-    ) {
-        val iterable = imageModelList.toList()
+        blackList: List<ImageBlockEntity>,
+        imageEntityList: MutableList<ImageEntity>
+    ): List<ImageEntity> {
+        val clearedList = imageEntityList.toMutableList()
         blackList.forEach { blackListEntity ->
-            iterable.forEachIndexed { index, imageModel ->
+            imageEntityList.forEachIndexed { index, imageModel ->
                 if (blackListEntity.id == imageModel.id) {
-                    imageModelList.removeAt(index)
+                    clearedList.removeAt(index)
                 }
             }
         }
+        return clearedList
     }
 }
