@@ -25,6 +25,12 @@ class ImagesRVAdapter:
                 .centerCrop()
                 .into(ivImageItem)
 
+            // For debug test
+//            with(binding) {
+//                tvIdItem.text = image.id
+//                tvLinkItem.text = image.imageUrl
+//            }
+
             checkImageIsSelected(image)
 
             ivImageItem.setOnLongClickListener {
