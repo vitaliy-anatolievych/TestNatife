@@ -13,6 +13,8 @@ import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 class ImagesRVAdapter:
     BaseQuickAdapter<ImageRVModel, ImagesRVAdapter.ImagesVewHolder>(R.layout.image_item), LoadMoreModule {
 
+    var deleteImage: ((ImageRVModel) -> Unit)? = null
+
     inner class ImagesVewHolder(view: View): BaseViewHolder(view) {
         private val binding = ImageItemBinding.bind(view)
 
@@ -33,6 +35,15 @@ class ImagesRVAdapter:
                 }
                 return@setOnLongClickListener true
             }
+
+            imbDeleteImage.setOnClickListener {
+                deleteItem(image)
+            }
+        }
+
+        private fun deleteItem(image: ImageRVModel) {
+            deleteImage?.invoke(image)
+            this@ImagesRVAdapter.remove(image)
         }
 
         private fun ImageItemBinding.setItemStatus(isSelected: Boolean ,image: ImageRVModel) {

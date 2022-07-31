@@ -3,6 +3,8 @@ package com.testtask.testnatife.data.repository
 import com.testtask.testnatife.BuildConfig
 import com.testtask.testnatife.core.type.Either
 import com.testtask.testnatife.core.type.Failure
+import com.testtask.testnatife.core.type.None
+import com.testtask.testnatife.data.local.ImagesCache
 import com.testtask.testnatife.data.remote.ImagesRemote
 import com.testtask.testnatife.data.utils.mappers.ImagesMapper
 import com.testtask.testnatife.domain.models.ImageModel
@@ -10,7 +12,8 @@ import com.testtask.testnatife.domain.repository.ImagesRepository
 import javax.inject.Inject
 
 class ImagesRepositoryImpl @Inject constructor(
-    private val imagesRemote: ImagesRemote
+    private val imagesRemote: ImagesRemote,
+    private val imagesCache: ImagesCache
 ): ImagesRepository {
 
     override fun getImages(
@@ -41,4 +44,8 @@ class ImagesRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override fun addImageToBlackList(imageModel: ImageModel) : Either<Failure, None> =
+        imagesCache.addToBlackList(ImagesMapper.mapImageModelToImageEntity(imageModel))
+
 }

@@ -9,6 +9,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import com.testtask.testnatife.R
 import com.testtask.testnatife.core.type.Failure
+import com.testtask.testnatife.core.type.None
 import com.testtask.testnatife.core.viewmodels.onFailure
 import com.testtask.testnatife.core.viewmodels.onSuccess
 import com.testtask.testnatife.databinding.FragmentMainScreenBinding
@@ -36,6 +37,7 @@ class MainScreenFragment: BaseFragment() {
         super.onCreate(savedInstanceState)
 
         mainViewModel = viewModel {
+            onSuccess(addToBlackListData, ::handleBlackList)
             onSuccess(imagesData, ::handleImages)
             onFailure(failureData, ::handleFailure)
         }
@@ -84,6 +86,7 @@ class MainScreenFragment: BaseFragment() {
         imageAdapter.loadMoreModule.preLoadNumber = COUNT_OF_PRELOAD_IMAGES
         imageAdapter.loadMoreModule.isAutoLoadMore = true
         imageAdapter.loadMoreModule.setOnLoadMoreListener { loadMore() }
+        imageAdapter.deleteImage = { addToBlackList(image = it) }
     }
 
     private fun handleImages(images: List<ImageModel>?) {
@@ -103,6 +106,14 @@ class MainScreenFragment: BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun handleBlackList(none: None?) {
+        Toast.makeText(requireContext(), getString(R.string.image_added_to_black_list), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun addToBlackList(image: ImageRVModel) {
+        mainViewModel.addImageToBlackList(RVAdapterMapper.mapImageRVModelToIMageModel(image))
     }
 
     private fun loadMore() = with(binding){

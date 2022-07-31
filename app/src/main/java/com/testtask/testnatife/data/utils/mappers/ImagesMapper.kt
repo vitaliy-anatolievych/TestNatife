@@ -10,12 +10,14 @@ object ImagesMapper {
     fun mapImageResponseToImageEntity(response: ImageResponse): List<ImageEntity> {
         return mutableListOf<ImageEntity>().apply {
             response.data?.map {
-                this.add(
-                    ImageEntity(
-                        id = it.id,
-                        imageUrl = it.images?.original?.url
+                if (it.id != null) {
+                    this.add(
+                        ImageEntity(
+                            id = it.id,
+                            imageUrl = it.images?.original?.url
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -23,7 +25,7 @@ object ImagesMapper {
     fun mapListImageEntityToListImageModel(imageEntity: List<ImageEntity>): List<ImageModel> {
         return mutableListOf<ImageModel>().apply {
             imageEntity.map {
-                if (it.id != null && it.imageUrl != null) {
+                if (it.imageUrl != null) {
                     this.add(ImageModel(
                         it.id,
                         it.imageUrl
@@ -31,5 +33,12 @@ object ImagesMapper {
                 }
             }
         }
+    }
+
+    fun mapImageModelToImageEntity(imageModel: ImageModel): ImageEntity {
+        return ImageEntity(
+            id = imageModel.id,
+            imageUrl = imageModel.imageUrl
+        )
     }
 }

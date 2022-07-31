@@ -2,13 +2,16 @@ package com.testtask.testnatife.presentation.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.testtask.testnatife.core.type.None
 import com.testtask.testnatife.core.viewmodels.BaseViewModel
 import com.testtask.testnatife.domain.models.ImageModel
+import com.testtask.testnatife.domain.usecases.AddImageToBlackList
 import com.testtask.testnatife.domain.usecases.GetImages
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    private val getImagesUseCase: GetImages
+    private val getImagesUseCase: GetImages,
+    private val addImageToBlackListUseCase: AddImageToBlackList
 ): BaseViewModel() {
 
     private val _imagesData = MutableLiveData<List<ImageModel>>()
@@ -18,6 +21,10 @@ class MainViewModel @Inject constructor(
     private val _currentQuery = MutableLiveData<String>()
     val currentQuery: String
         get() = _currentQuery.value ?: ""
+
+    private val _addToBlackListData = MutableLiveData<None>()
+    val addToBlackListData: LiveData<None>
+        get() = _addToBlackListData
 
     fun getImages(query: String) {
         isNextData(query) // Если у нас новый запрос, сбросит значение offset
@@ -35,6 +42,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun addImageToBlackList(image: ImageModel) {
+        addImageToBlackListUseCase(image) {
+            it.either(::handleFailure, ::handleBlackList)
+        }
+    }
+
     private fun isNextData(query: String) {
         if (query == _currentQuery.value) {
             PAGE_ITERATOR++
@@ -44,6 +57,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun handleBlackList(none: None) {
+        _addToBlackListData.value = none
+    }
+
     private fun handleImages(images: List<ImageModel>) {
         _imagesData.value = images
     }
@@ -51,6 +68,7 @@ class MainViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         getImagesUseCase.unsubscribe()
+        addImageToBlackListUseCase.unsubscribe()
     }
 
     companion object {

@@ -16,4 +16,11 @@ object RVAdapterMapper {
             }
         }
     }
+
+    fun mapImageRVModelToIMageModel(imageRVModel: ImageRVModel): ImageModel {
+        return ImageModel(
+            id = imageRVModel.id,
+            imageUrl = imageRVModel.imageUrl
+        )
+    }
 }

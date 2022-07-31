@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.testtask.testnatife.R
-import com.testtask.testnatife.di.DaggerAppComponent
 import com.testtask.testnatife.presentation.contracts.Navigator
 import com.testtask.testnatife.presentation.screens.MainScreenFragment
 
