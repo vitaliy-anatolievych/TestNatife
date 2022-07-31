@@ -14,6 +14,7 @@ class ImagesCacheImpl @Inject constructor(
 
     override fun addToBlackList(imageBlockEntity: ImageBlockEntity): Either<Failure, None> {
         dao.addImageToBlackList(imageBlockEntity)
+        dao.deleteImageFromCache(imageBlockEntity.id)
         return Either.Right(None())
     }
 
