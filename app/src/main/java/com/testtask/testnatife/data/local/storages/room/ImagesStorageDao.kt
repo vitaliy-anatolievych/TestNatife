@@ -13,6 +13,9 @@ interface ImagesStorageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addImageToBlackList(imageBlockEntity: ImageBlockEntity)
 
+    @Query("DELETE FROM image_cache WHERE id=:id")
+    fun deleteImageFromCache(id: String)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addImageToCache(imageEntity: List<ImageEntity>)
 
