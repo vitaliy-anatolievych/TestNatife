@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class ImageEntity (
     @PrimaryKey
     val id: String,
+    val query: String,
     val imageUrl: String?
     )

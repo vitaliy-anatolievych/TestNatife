@@ -23,7 +23,7 @@ import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
 import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.viewmodels.MainViewModel
 
-class MainScreenFragment: BaseFragment() {
+class MainScreenFragment : BaseFragment() {
 
     private lateinit var mainViewModel: MainViewModel
 
@@ -61,7 +61,7 @@ class MainScreenFragment: BaseFragment() {
 
     private fun downloadImages() {
         binding.etSearchImage.setOnEditorActionListener { textView, actionId, _ ->
-            when(actionId) {
+            when (actionId) {
                 EditorInfo.IME_ACTION_SEARCH -> {
                     val query = textView.text.toString()
                     if (isNewQueryValid(query)) {
@@ -93,7 +93,7 @@ class MainScreenFragment: BaseFragment() {
         Log.e("IMAGES", "${images?.size}")
         Log.e("IMAGES", "$images")
 
-        images?.let { newList->
+        images?.let { newList ->
             GlidePreload.preloadImages(requireContext(), newList) { isLoaded ->
                 if (isLoaded) {
                     showLoadProgress(isStateLoad = false)
@@ -109,25 +109,33 @@ class MainScreenFragment: BaseFragment() {
     }
 
     private fun handleBlackList(none: None?) {
-        Toast.makeText(requireContext(), getString(R.string.image_added_to_black_list), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.image_added_to_black_list),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun addToBlackList(image: ImageRVModel) {
         mainViewModel.addImageToBlackList(RVAdapterMapper.mapImageRVModelToIMageModel(image))
     }
 
-    private fun loadMore() = with(binding){
+    private fun loadMore() = with(binding) {
         mainViewModel.getImages(etSearchImage.text.toString())
     }
 
     override fun handleFailure(failure: Failure?) {
-        when(failure) {
+        when (failure) {
             is Failure.NetworkConnectionError -> {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.network_connection_error),
                     Toast.LENGTH_SHORT
                 ).show()
+
+                val query = binding.etSearchImage.text.toString()
+
+                mainViewModel.loadImagesFromCache(query = query)
 
                 sayAdapterLoadDataFailure()
             }
@@ -144,13 +152,15 @@ class MainScreenFragment: BaseFragment() {
             is Failure.ListEmpty -> {
                 Toast.makeText(
                     requireContext(), getString(R.string.error_list_is_empty),
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
                 sayAdapterLoadDataFailure()
             }
             else -> {
                 Toast.makeText(
                     requireContext(), getString(R.string.unknown_error),
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 sayAdapterLoadDataFailure()
             }

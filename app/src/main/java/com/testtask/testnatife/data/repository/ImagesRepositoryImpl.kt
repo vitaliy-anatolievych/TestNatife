@@ -64,6 +64,19 @@ class ImagesRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getImagesFromCache(query: String): Either<Failure, List<ImageModel>> {
+        val response = imagesCache.getImagesFromCache(query)
+
+        return when(response) {
+            is Either.Left -> response
+            is Either.Right -> {
+                response.right(
+                    ImagesMapper.mapListImageEntityToListImageModel(response.b)
+                )
+            }
+        }
+    }
+
     override fun addImageToBlackList(imageModel: ImageModel) : Either<Failure, None> =
         imagesCache.addToBlackList(ImagesMapper.mapImageModelToImageBlockEntity(imageModel))
 

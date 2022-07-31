@@ -9,6 +9,7 @@ import com.testtask.testnatife.data.entity.ImageEntity
 interface ImagesCache {
 
     fun addToBlackList(imageBlockEntity: ImageBlockEntity): Either<Failure, None>
+    fun getImagesFromCache(query: String): Either<Failure, List<ImageEntity>>
     fun addImagesToCache(listImageEntity: List<ImageEntity>)
     fun getBlackList(): List<ImageBlockEntity>
 }

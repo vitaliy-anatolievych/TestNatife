@@ -25,7 +25,7 @@ class ImagesRemoteImpl @Inject constructor(
         return request.make(service.getImages(
             token, query, limit, offset, rating, lang
         )) {
-            ImagesMapper.mapImageResponseToImageEntity(it)
+            ImagesMapper.mapImageResponseToImageEntity(response = it, query)
         }
     }
 

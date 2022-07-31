@@ -8,14 +8,15 @@ import com.testtask.testnatife.domain.models.ImageModel
 object ImagesMapper {
 
 
-    fun mapImageResponseToImageEntity(response: ImageResponse): List<ImageEntity> {
+    fun mapImageResponseToImageEntity(response: ImageResponse, query: String): List<ImageEntity> {
         return mutableListOf<ImageEntity>().apply {
             response.data?.map {
                 if (it.id != null) {
                     this.add(
                         ImageEntity(
                             id = it.id,
-                            imageUrl = it.images?.original?.url
+                            imageUrl = it.images?.original?.url,
+                            query = query
                         )
                     )
                 }

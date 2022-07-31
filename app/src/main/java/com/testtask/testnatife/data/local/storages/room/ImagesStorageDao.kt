@@ -16,6 +16,9 @@ interface ImagesStorageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addImageToCache(imageEntity: List<ImageEntity>)
 
+    @Query("SELECT * FROM image_cache WHERE `query`=:query")
+    fun getImagesFromCache(query: String): List<ImageEntity>
+
     @Query("SELECT * FROM black_list")
     fun getBlackList(): List<ImageBlockEntity>
 }

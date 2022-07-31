@@ -17,6 +17,10 @@ class ImagesCacheImpl @Inject constructor(
         return Either.Right(None())
     }
 
+    override fun getImagesFromCache(query: String): Either<Failure, List<ImageEntity>> {
+        return Either.Right(dao.getImagesFromCache(query))
+    }
+
     override fun addImagesToCache(listImageEntity: List<ImageEntity>) = dao.addImageToCache(listImageEntity)
 
     override fun getBlackList(): List<ImageBlockEntity> = dao.getBlackList()

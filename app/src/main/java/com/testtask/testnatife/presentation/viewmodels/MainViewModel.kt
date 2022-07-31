@@ -7,11 +7,13 @@ import com.testtask.testnatife.core.viewmodels.BaseViewModel
 import com.testtask.testnatife.domain.models.ImageModel
 import com.testtask.testnatife.domain.usecases.AddImageToBlackList
 import com.testtask.testnatife.domain.usecases.GetImages
+import com.testtask.testnatife.domain.usecases.LoadImagesFromCache
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val getImagesUseCase: GetImages,
-    private val addImageToBlackListUseCase: AddImageToBlackList
+    private val addImageToBlackListUseCase: AddImageToBlackList,
+    private val loadImagesFromCacheUseCase: LoadImagesFromCache
 ): BaseViewModel() {
 
     private val _imagesData = MutableLiveData<List<ImageModel>>()
@@ -45,6 +47,12 @@ class MainViewModel @Inject constructor(
     fun addImageToBlackList(image: ImageModel) {
         addImageToBlackListUseCase(image) {
             it.either(::handleFailure, ::handleBlackList)
+        }
+    }
+
+    fun loadImagesFromCache(query: String) {
+        loadImagesFromCacheUseCase(LoadImagesFromCache.Params(query)) {
+            it.either(::handleFailure, ::handleImages)
         }
     }
 

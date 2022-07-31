@@ -16,6 +16,9 @@ interface ImagesRepository {
         lang: String
     ): Either<Failure, List<ImageModel>>
 
+    fun getImagesFromCache(
+        query: String
+    ): Either<Failure, List<ImageModel>>
 
     fun addImageToBlackList(imageModel: ImageModel): Either<Failure, None>
 }
