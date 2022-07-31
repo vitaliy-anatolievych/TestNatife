@@ -10,6 +10,6 @@ class ImageListDiffCallBack: DiffUtil.ItemCallback<ImageRVModel>() {
     }
 
     override fun areContentsTheSame(oldItem: ImageRVModel, newItem: ImageRVModel): Boolean {
-        return oldItem == newItem
+        return areItemsTheSame(oldItem, newItem)
     }
 }

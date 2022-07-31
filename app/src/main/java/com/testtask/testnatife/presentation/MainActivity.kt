@@ -1,7 +1,12 @@
 package com.testtask.testnatife.presentation
 
+import android.app.Activity
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import com.testtask.testnatife.R
 import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
@@ -34,4 +39,13 @@ class MainActivity : AppCompatActivity(), Navigator {
             commit()
         }
     }
+}
+
+fun Context.debugPrint(str: String) {
+    Log.e("DEBUG_PRINT", str)
+}
+
+fun Context.hideKeyboard(view: View) {
+    val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }

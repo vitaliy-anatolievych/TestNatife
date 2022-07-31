@@ -8,6 +8,7 @@ import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.testtask.testnatife.domain.models.ImageModel
+import com.testtask.testnatife.presentation.debugPrint
 
 object GlidePreload {
 
@@ -30,6 +31,7 @@ object GlidePreload {
                         ): Boolean {
                             downloadedImages++
                             if (downloadedImages >= list.size) isLoaded.invoke(true)
+                            context.debugPrint("onLoadFailed: $downloadedImages | ${list.size}")
                             return false
                         }
 
@@ -41,11 +43,17 @@ object GlidePreload {
                             isFirstResource: Boolean
                         ): Boolean {
                             downloadedImages++
+
                             if (downloadedImages >= list.size) isLoaded.invoke(true)
+                            context.debugPrint("onResourceReady: downloaded images: $downloadedImages | list size: ${list.size}")
                             return false
                         }
                     }).preload()
             }.run()
         }
+    }
+
+    fun setNewPreload() {
+        downloadedImages = 0
     }
 }

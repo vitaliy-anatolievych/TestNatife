@@ -14,7 +14,7 @@ class MainViewModel @Inject constructor(
     private val getImagesUseCase: GetImages,
     private val addImageToBlackListUseCase: AddImageToBlackList,
     private val loadImagesFromCacheUseCase: LoadImagesFromCache
-): BaseViewModel() {
+) : BaseViewModel() {
 
     private val _imagesData = MutableLiveData<List<ImageModel>>()
     val imagesData: LiveData<List<ImageModel>>
@@ -28,12 +28,16 @@ class MainViewModel @Inject constructor(
     val addToBlackListData: LiveData<None>
         get() = _addToBlackListData
 
+    private val _isNextData = MutableLiveData<Boolean>()
+    val isNextData: Boolean
+        get() = _isNextData.value ?: false
+
     fun getImages(query: String) {
-        isNextData(query) // Если у нас новый запрос, сбросит значение offset
+        _isNextData.value = isNextData(query) // Если у нас новый запрос, сбросит значение offset
 
         getImagesUseCase(
             GetImages.Params(
-               query = query,
+                query = query,
                 limit = IMAGES_COUNT,
                 offset = IMAGES_COUNT * PAGE_ITERATOR,
                 rating = "g",
@@ -56,12 +60,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun isNextData(query: String) {
-        if (query == _currentQuery.value) {
+    private fun isNextData(query: String): Boolean {
+        return if (query == _currentQuery.value) {
             PAGE_ITERATOR++
+            false
         } else {
             PAGE_ITERATOR = 0
             _currentQuery.value = query
+            true
         }
     }
 

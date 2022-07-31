@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.testtask.testnatife.R
 import com.testtask.testnatife.core.type.Failure
 import com.testtask.testnatife.core.type.None
@@ -22,6 +23,7 @@ import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
 import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
 import com.testtask.testnatife.presentation.contracts.navigator
 import com.testtask.testnatife.presentation.core.BaseFragment
+import com.testtask.testnatife.presentation.hideKeyboard
 import com.testtask.testnatife.presentation.viewmodels.MainViewModel
 
 class MainScreenFragment : BaseFragment() {
@@ -71,6 +73,7 @@ class MainScreenFragment : BaseFragment() {
                     if (isNewQueryValid(query)) {
                         showLoadProgress(isStateLoad = true)
                         mainViewModel.getImages(textView.text.toString())
+                        requireContext().hideKeyboard(textView)
                     }
                 }
             }
@@ -83,14 +86,14 @@ class MainScreenFragment : BaseFragment() {
 
     private fun settingsAdapter() {
         imageAdapter = ImagesRVAdapter()
-        imageAdapter.setDiffCallback(ImageListDiffCallBack())
         binding.rvMainScreen.adapter = imageAdapter
+        imageAdapter.setDiffCallback(ImageListDiffCallBack())
 
         imageAdapter.loadMoreModule.loadMoreView = LoadMoreViewVertical()
         imageAdapter.loadMoreModule.preLoadNumber = COUNT_OF_PRELOAD_IMAGES
         imageAdapter.loadMoreModule.isAutoLoadMore = true
         imageAdapter.loadMoreModule.setOnLoadMoreListener { loadMore() }
-        imageAdapter.deleteImage {  addToBlackList(image = it) }
+        imageAdapter.deleteImage { addToBlackList(image = it) }
         imageAdapter.onImageClicked { openImageFullSize(image = it) }
     }
 
@@ -99,14 +102,19 @@ class MainScreenFragment : BaseFragment() {
         Log.e("IMAGES", "$images")
 
         images?.let { newList ->
+            GlidePreload.setNewPreload()
             GlidePreload.preloadImages(requireContext(), newList) { isLoaded ->
                 if (isLoaded) {
                     showLoadProgress(isStateLoad = false)
-                    // TODO Остался баг с обновлением списка
                     val linkedList = mutableListOf<ImageRVModel>()
-                    linkedList.addAll(imageAdapter.data)
-                    linkedList.addAll(RVAdapterMapper.mapListImageModelToListImageRVModel(newList))
-                    imageAdapter.setDiffNewData(linkedList.toMutableList())
+                    if (mainViewModel.isNextData) {
+                        linkedList.addAll(RVAdapterMapper.mapListImageModelToListImageRVModel(newList))
+                        binding.rvMainScreen.smoothScrollToPosition(RecyclerView.SCROLL_INDICATOR_TOP)
+                    } else {
+                        linkedList.addAll(imageAdapter.data)
+                        linkedList.addAll(RVAdapterMapper.mapListImageModelToListImageRVModel(newList))
+                    }
+                    imageAdapter.setDiffNewData(linkedList.distinctBy { it.id }.toMutableList())
                     sayAdapterLoadDataSuccessful()
                 }
             }
@@ -177,8 +185,8 @@ class MainScreenFragment : BaseFragment() {
     }
 
     private fun sayAdapterLoadDataSuccessful() {
-        imageAdapter.loadMoreModule.isEnableLoadMore = true
         imageAdapter.loadMoreModule.loadMoreComplete()
+        imageAdapter.loadMoreModule.isEnableLoadMore = true
     }
 
     private fun sayAdapterLoadDataFailure() {
