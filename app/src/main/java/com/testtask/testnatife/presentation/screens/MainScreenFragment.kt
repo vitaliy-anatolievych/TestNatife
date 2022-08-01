@@ -100,7 +100,10 @@ class MainScreenFragment : BaseFragment() {
         imageAdapter.loadMoreModule.loadMoreView = LoadMoreViewVertical()
         imageAdapter.loadMoreModule.preLoadNumber = COUNT_OF_PRELOAD_IMAGES
         imageAdapter.loadMoreModule.isAutoLoadMore = true
-        imageAdapter.loadMoreModule.setOnLoadMoreListener { loadMore() }
+        imageAdapter.loadMoreModule.setOnLoadMoreListener {
+            requireContext().debugPrint("CLICK setOnLoadMoreListener")
+            loadMore()
+        }
         imageAdapter.deleteImage { addToBlackList(image = it) }
         imageAdapter.onImageClicked { openImageFullSize() }
     }
@@ -204,6 +207,7 @@ class MainScreenFragment : BaseFragment() {
         super.onSaveInstanceState(outState)
         mainViewModel._stateAdapter.value = imageAdapter
         mainViewModel._stateRecyclerView.value = binding.rvMainScreen.layoutManager?.onSaveInstanceState()
+        sayAdapterLoadDataSuccessful()
     }
 
     private fun sayAdapterLoadDataSuccessful() {
