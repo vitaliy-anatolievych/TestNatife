@@ -1,6 +1,9 @@
 package com.testtask.testnatife.presentation.adapters
 
+import android.os.Parcelable
 import android.view.View
+import android.widget.ImageButton
+import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -9,21 +12,29 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.testtask.testnatife.R
 import com.testtask.testnatife.databinding.ImageItemBinding
 import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 class ImagesRVAdapter:
-    BaseQuickAdapter<ImageRVModel, ImagesRVAdapter.ImagesVewHolder>(R.layout.image_item), LoadMoreModule {
+    BaseQuickAdapter<ImageRVModel, ImagesRVAdapter.ImagesVewHolder>(R.layout.image_item), LoadMoreModule, Parcelable {
 
+    @IgnoredOnParcel
     private var deleteImage: ((ImageRVModel) -> Unit)? = null
-    private var onImageClicked: ((ImageRVModel) -> Unit)? = null
+
+    @IgnoredOnParcel
+    private var onImageClicked: (() -> Unit)? = null
 
     inner class ImagesVewHolder(view: View): BaseViewHolder(view) {
-        private val binding = ImageItemBinding.bind(view)
+        private val imageView = view.findViewById<ImageView>(R.id.iv_image_item)
+        private val deleteButton = view.findViewById<ImageButton>(R.id.imb_delete_image)
 
-        fun bind(image: ImageRVModel) = with(binding){
-            Glide.with(binding.ivImageItem)
+        fun bind(image: ImageRVModel) {
+
+            Glide.with(imageView.context)
                 .load(image.imageUrl)
                 .centerCrop()
-                .into(ivImageItem)
+                .into(imageView)
 
             // For debug test
 //            with(binding) {
@@ -33,8 +44,8 @@ class ImagesRVAdapter:
 
             checkImageIsSelected(image)
 
-            ivImageItem.setOnLongClickListener {
-                if (!imbDeleteImage.isVisible) {
+            imageView.setOnLongClickListener {
+                if (!deleteButton.isVisible) {
                     setItemStatus(isSelected = true, image)
                 }
                 else {
@@ -43,11 +54,11 @@ class ImagesRVAdapter:
                 return@setOnLongClickListener true
             }
 
-            ivImageItem.setOnClickListener {
-                onImageClicked?.invoke(image)
+            imageView.setOnClickListener {
+                onImageClicked?.invoke()
             }
 
-            imbDeleteImage.setOnClickListener {
+            deleteButton.setOnClickListener {
                 deleteItem(image)
             }
         }
@@ -57,21 +68,21 @@ class ImagesRVAdapter:
             this@ImagesRVAdapter.remove(image)
         }
 
-        private fun ImageItemBinding.setItemStatus(isSelected: Boolean ,image: ImageRVModel) {
-            imbDeleteImage.visibility = if (isSelected) View.VISIBLE else View.GONE
+        private fun setItemStatus(isSelected: Boolean ,image: ImageRVModel) {
+            deleteButton.visibility = if (isSelected) View.VISIBLE else View.GONE
             image.isSelected = isSelected
         }
 
-        private fun ImageItemBinding.checkImageIsSelected(image: ImageRVModel) {
+        private fun checkImageIsSelected(image: ImageRVModel) {
             if (image.isSelected) {
-                imbDeleteImage.visibility = View.VISIBLE
+                deleteButton.visibility = View.VISIBLE
             } else {
-                imbDeleteImage.visibility = View.GONE
+                deleteButton.visibility = View.GONE
             }
         }
     }
 
-    fun onImageClicked(listener: (ImageRVModel) -> Unit) {
+    fun onImageClicked(listener: () -> Unit) {
         this.onImageClicked = listener
     }
 
