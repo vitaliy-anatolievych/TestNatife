@@ -9,7 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.testtask.testnatife.R
-import com.testtask.testnatife.presentation.adapters.ImagesRVAdapter
+import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 import com.testtask.testnatife.presentation.contracts.Navigator
 import com.testtask.testnatife.presentation.screens.FullImageScreenFragment
 import com.testtask.testnatife.presentation.screens.MainScreenFragment
@@ -27,8 +27,8 @@ class MainActivity : AppCompatActivity(), Navigator {
         launchFragment(MainScreenFragment.newInstance(), isAddToBackStack = false, isNewTask = true)
     }
 
-    override fun goToFullScreenImage(imagesRVAdapter: ImagesRVAdapter) {
-        launchFragment(FullImageScreenFragment.newInstance(imagesRVAdapter), isAddToBackStack = true, isNewTask = false)
+    override fun goToFullScreenImage(imagesList: ArrayList<ImageRVModel>) {
+        launchFragment(FullImageScreenFragment.newInstance(imagesList), isAddToBackStack = true, isNewTask = false)
     }
 
     private fun launchFragment(fragment: Fragment, isAddToBackStack: Boolean, isNewTask: Boolean) {

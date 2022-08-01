@@ -22,6 +22,7 @@ import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 import com.testtask.testnatife.presentation.adapters.utils.GlidePreload
 import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
 import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
+import com.testtask.testnatife.presentation.contracts.navigator
 import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.debugPrint
 import com.testtask.testnatife.presentation.hideKeyboard
@@ -132,7 +133,8 @@ class MainScreenFragment : BaseFragment() {
                             )
                         )
                     }
-                    imageAdapter.setDiffNewData(linkedList.distinctBy { it.id }.toMutableList())
+                    delegateData = { linkedList }
+                    imageAdapter.setDiffNewData(linkedList.toMutableList())
                     sayAdapterLoadDataSuccessful()
                 }
             }
@@ -148,7 +150,12 @@ class MainScreenFragment : BaseFragment() {
     }
 
     private fun openImageFullSize() {
-//        navigator().goToFullScreenImage(binding.rvMainScreen.adapter as ImagesRVAdapter)
+        navigator().goToFullScreenImage(imageAdapter.data as ArrayList)
+
+        FullImageScreenFragment.loadMoreImages = {
+            loadMore()
+            delegateData?.invoke()!!
+        }
     }
 
     private fun addToBlackList(image: ImageRVModel) {
@@ -230,6 +237,7 @@ class MainScreenFragment : BaseFragment() {
 
     companion object {
         private const val COUNT_OF_PRELOAD_IMAGES = 10
+        private var delegateData: (() -> List<ImageRVModel>)? = null
 
         @JvmStatic
         fun newInstance(): MainScreenFragment = MainScreenFragment()
