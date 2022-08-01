@@ -22,6 +22,7 @@ import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 import com.testtask.testnatife.presentation.adapters.utils.GlidePreload
 import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
 import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
+import com.testtask.testnatife.presentation.contracts.navigator
 import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.debugPrint
 import com.testtask.testnatife.presentation.hideKeyboard
@@ -104,7 +105,7 @@ class MainScreenFragment : BaseFragment() {
             loadMore()
         }
         imageAdapter.deleteImage { addToBlackList(image = it) }
-        imageAdapter.onImageClicked { openImageFullSize() }
+        imageAdapter.onImageClicked { openImageFullSize(it) }
     }
 
     private fun handleImages(images: List<ImageModel>?) {
@@ -147,8 +148,9 @@ class MainScreenFragment : BaseFragment() {
         ).show()
     }
 
-    private fun openImageFullSize() {
-//        navigator().goToFullScreenImage(binding.rvMainScreen.adapter as ImagesRVAdapter)
+    private fun openImageFullSize(image: ImageRVModel) {
+        navigator().goToFullScreenImage(image)
+        this.onStop()
     }
 
     private fun addToBlackList(image: ImageRVModel) {

@@ -4,23 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import com.testtask.testnatife.databinding.FragmentFullScreenImageBinding
-import com.testtask.testnatife.presentation.adapters.ImagesRVAdapter
-import com.testtask.testnatife.presentation.core.BaseFragment
-import com.testtask.testnatife.presentation.debugPrint
+import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 
-class FullImageScreenFragment : BaseFragment() {
+class FullImageScreenFragment : DialogFragment() {
     private var _binding: FragmentFullScreenImageBinding? = null
     private val binding: FragmentFullScreenImageBinding
         get() = _binding ?: throw NullPointerException("FragmentFullScreenImageBinding is null")
 
-    private lateinit var rvAdapter: ImagesRVAdapter
+    private lateinit var image: ImageRVModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireContext().debugPrint("savedInstanceState: $arguments ")
-        rvAdapter = arguments?.getParcelable<ImagesRVAdapter>(IMAGE_ADAPTER)
-            ?: throw NullPointerException("FullImageScreenFragment: Adapter no Founded")
+        image = arguments?.getParcelable(IMAGE)
+            ?: throw NullPointerException("FullImageScreenFragment: image is null")
     }
 
     override fun onCreateView(
@@ -28,23 +27,29 @@ class FullImageScreenFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFullScreenImageBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentFullScreenImageBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvFullScreen.adapter = rvAdapter
+
+        Glide.with(dialog?.window?.decorView!!)
+            .asGif()
+            .load(image.imageUrl)
+            .into(binding.ivImageFull)
     }
 
     companion object {
-        private const val IMAGE_ADAPTER = "image_adapter"
+        private const val IMAGE = "image_full"
+
 
         @JvmStatic
-        fun newInstance(imagesRVAdapter: ImagesRVAdapter) =
+        fun newInstance(image: ImageRVModel) =
             FullImageScreenFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(IMAGE_ADAPTER, imagesRVAdapter)
+                    putParcelable(IMAGE, image)
                 }
             }
     }
