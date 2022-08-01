@@ -105,7 +105,7 @@ class MainScreenFragment : BaseFragment() {
             loadMore()
         }
         imageAdapter.deleteImage { addToBlackList(image = it) }
-        imageAdapter.onImageClicked { openImageFullSize() }
+        imageAdapter.onImageClicked { openImageFullSize(it) }
     }
 
     private fun handleImages(images: List<ImageModel>?) {
@@ -133,7 +133,6 @@ class MainScreenFragment : BaseFragment() {
                             )
                         )
                     }
-                    delegateData = { linkedList }
                     imageAdapter.setDiffNewData(linkedList.toMutableList())
                     sayAdapterLoadDataSuccessful()
                 }
@@ -149,13 +148,9 @@ class MainScreenFragment : BaseFragment() {
         ).show()
     }
 
-    private fun openImageFullSize() {
-        navigator().goToFullScreenImage(imageAdapter.data as ArrayList)
-
-        FullImageScreenFragment.loadMoreImages = {
-            loadMore()
-            delegateData?.invoke()!!
-        }
+    private fun openImageFullSize(image: ImageRVModel) {
+        navigator().goToFullScreenImage(image)
+        this.onStop()
     }
 
     private fun addToBlackList(image: ImageRVModel) {
@@ -237,7 +232,6 @@ class MainScreenFragment : BaseFragment() {
 
     companion object {
         private const val COUNT_OF_PRELOAD_IMAGES = 10
-        private var delegateData: (() -> List<ImageRVModel>)? = null
 
         @JvmStatic
         fun newInstance(): MainScreenFragment = MainScreenFragment()

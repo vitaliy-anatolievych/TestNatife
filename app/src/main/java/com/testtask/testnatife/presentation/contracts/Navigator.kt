@@ -11,6 +11,6 @@ interface Navigator {
 
     fun goToMainScreen()
 
-    fun goToFullScreenImage(imagesList: ArrayList<ImageRVModel>)
+    fun goToFullScreenImage(image: ImageRVModel)
 }
 

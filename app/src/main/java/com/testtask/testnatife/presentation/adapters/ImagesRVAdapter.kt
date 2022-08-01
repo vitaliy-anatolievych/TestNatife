@@ -10,7 +10,6 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.module.LoadMoreModule
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.testtask.testnatife.R
-import com.testtask.testnatife.databinding.ImageItemBinding
 import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -23,7 +22,7 @@ class ImagesRVAdapter:
     private var deleteImage: ((ImageRVModel) -> Unit)? = null
 
     @IgnoredOnParcel
-    private var onImageClicked: (() -> Unit)? = null
+    private var onImageClicked: ((ImageRVModel) -> Unit)? = null
 
     inner class ImagesVewHolder(val view: View): BaseViewHolder(view) {
         private val imageView = view.findViewById<ImageView>(R.id.iv_image_item)
@@ -55,7 +54,7 @@ class ImagesRVAdapter:
             }
 
             imageView.setOnClickListener {
-                onImageClicked?.invoke()
+                onImageClicked?.invoke(image)
             }
 
             deleteButton.setOnClickListener {
@@ -82,7 +81,7 @@ class ImagesRVAdapter:
         }
     }
 
-    fun onImageClicked(listener: () -> Unit) {
+    fun onImageClicked(listener: (ImageRVModel) -> Unit) {
         this.onImageClicked = listener
     }
 

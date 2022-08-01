@@ -27,8 +27,9 @@ class MainActivity : AppCompatActivity(), Navigator {
         launchFragment(MainScreenFragment.newInstance(), isAddToBackStack = false, isNewTask = true)
     }
 
-    override fun goToFullScreenImage(imagesList: ArrayList<ImageRVModel>) {
-        launchFragment(FullImageScreenFragment.newInstance(imagesList), isAddToBackStack = true, isNewTask = false)
+    override fun goToFullScreenImage(image: ImageRVModel) {
+        FullImageScreenFragment.newInstance(image)
+            .show(supportFragmentManager, FullImageScreenFragment::class.simpleName)
     }
 
     private fun launchFragment(fragment: Fragment, isAddToBackStack: Boolean, isNewTask: Boolean) {
