@@ -22,7 +22,6 @@ import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 import com.testtask.testnatife.presentation.adapters.utils.GlidePreload
 import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
 import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
-import com.testtask.testnatife.presentation.contracts.navigator
 import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.debugPrint
 import com.testtask.testnatife.presentation.hideKeyboard
@@ -205,9 +204,14 @@ class MainScreenFragment : BaseFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mainViewModel._stateAdapter.value = imageAdapter
-        mainViewModel._stateRecyclerView.value = binding.rvMainScreen.layoutManager?.onSaveInstanceState()
+        saveStateRecycler()
         sayAdapterLoadDataSuccessful()
+    }
+
+    private fun saveStateRecycler() {
+        mainViewModel._stateAdapter.value = imageAdapter
+        mainViewModel._stateRecyclerView.value =
+            binding.rvMainScreen.layoutManager?.onSaveInstanceState()
     }
 
     private fun sayAdapterLoadDataSuccessful() {
