@@ -132,7 +132,7 @@ class MainScreenFragment : BaseFragment() {
                             )
                         )
                     }
-                    imageAdapter.setDiffNewData(linkedList.distinctBy { it.id }.toMutableList())
+                    imageAdapter.setDiffNewData(linkedList.toMutableList())
                     sayAdapterLoadDataSuccessful()
                 }
             }
