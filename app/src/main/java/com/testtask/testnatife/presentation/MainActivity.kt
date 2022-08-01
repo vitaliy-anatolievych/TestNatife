@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.testtask.testnatife.R
 import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
+import com.testtask.testnatife.presentation.adapters.utils.NetworkStateListener
 import com.testtask.testnatife.presentation.contracts.Navigator
 import com.testtask.testnatife.presentation.screens.FullImageScreenFragment
 import com.testtask.testnatife.presentation.screens.MainScreenFragment
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity(), Navigator {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        NetworkStateListener.registerListener(this)
         goToMainScreen()
     }
 

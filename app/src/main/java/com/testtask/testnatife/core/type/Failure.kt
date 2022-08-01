@@ -5,4 +5,6 @@ sealed class Failure {
     object ServerError : Failure()
     object UnknownError: Failure()
     object ListEmpty: Failure()
+    object RequestFailure: Failure()
+    object RequestIsEmptyOrOld: Failure()
 }

@@ -8,4 +8,5 @@
     <string name="load_error">Click to try load again</string>
     <string name="unknown_error">Неизвестная ошибка</string>
     <string name="image_added_to_black_list">Изображение добавлено в чёрный список, и больше не будет показываться при следующем поиске</string>
+    <string name="request_empty_or_old">Ваш запрос пуст, или уже загружен</string>
 </resources>

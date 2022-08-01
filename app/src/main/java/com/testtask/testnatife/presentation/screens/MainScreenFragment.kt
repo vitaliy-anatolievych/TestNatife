@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.testtask.testnatife.R
@@ -16,11 +17,13 @@ import com.testtask.testnatife.core.viewmodels.onSuccess
 import com.testtask.testnatife.core.viewmodels.onSuccessOnce
 import com.testtask.testnatife.databinding.FragmentMainScreenBinding
 import com.testtask.testnatife.domain.models.ImageModel
+import com.testtask.testnatife.presentation.MainActivity
 import com.testtask.testnatife.presentation.adapters.ImagesRVAdapter
 import com.testtask.testnatife.presentation.adapters.diffutils.ImageListDiffCallBack
 import com.testtask.testnatife.presentation.adapters.models.ImageRVModel
 import com.testtask.testnatife.presentation.adapters.utils.GlidePreload
 import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
+import com.testtask.testnatife.presentation.adapters.utils.NetworkStateListener
 import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
 import com.testtask.testnatife.presentation.contracts.navigator
 import com.testtask.testnatife.presentation.core.BaseFragment
@@ -37,6 +40,7 @@ class MainScreenFragment : BaseFragment() {
         get() = _binding ?: throw NullPointerException("FragmentMainScreenBinding is null")
 
     private lateinit var imageAdapter: ImagesRVAdapter
+    private var isNetworkAvailable = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +49,11 @@ class MainScreenFragment : BaseFragment() {
             onSuccess(addToBlackListData, ::handleBlackList)
             onSuccessOnce(imagesData, ::handleImages)
             onFailure(failureData, ::handleFailure)
+        }
+
+        NetworkStateListener.networkState = { networkState ->
+            requireContext().debugPrint("$networkState")
+            isNetworkAvailable = networkState
         }
     }
 
@@ -73,9 +82,9 @@ class MainScreenFragment : BaseFragment() {
                 EditorInfo.IME_ACTION_SEARCH -> {
                     val query = textView.text.toString()
                     if (isNewQueryValid(query)) {
-                        showLoadProgress(isStateLoad = true)
-                        mainViewModel.getImages(textView.text.toString())
-                        requireContext().hideKeyboard(textView)
+                        makeRequest(textView)
+                    } else {
+                        handleFailure(Failure.RequestIsEmptyOrOld)
                     }
                 }
             }
@@ -83,8 +92,18 @@ class MainScreenFragment : BaseFragment() {
         }
     }
 
+    private fun makeRequest(textView: TextView) {
+        if (isNetworkAvailable) {
+            showLoadProgress(isStateLoad = true)
+            mainViewModel.getImages(textView.text.toString())
+            requireContext().hideKeyboard(textView)
+        } else {
+            handleFailure(Failure.RequestFailure)
+        }
+    }
+
     private fun isNewQueryValid(query: String) =
-        (query.isNotEmpty() && mainViewModel.currentQuery != query)
+        (query.isNotEmpty() && imageAdapter.data.isEmpty() && query != mainViewModel.currentQuery)
 
     private fun settingsAdapter() {
         imageAdapter = mainViewModel._stateAdapter.value ?: ImagesRVAdapter()
@@ -172,7 +191,18 @@ class MainScreenFragment : BaseFragment() {
 
                 val query = binding.etSearchImage.text.toString()
 
-                mainViewModel.loadImagesFromCache(query = query)
+                if (isNewQueryValid(query)) {
+                    mainViewModel.loadImagesFromCache(query = query)
+                }
+
+                sayAdapterLoadDataFailure()
+            }
+            is Failure.RequestFailure -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.network_connection_error),
+                    Toast.LENGTH_SHORT
+                ).show()
 
                 sayAdapterLoadDataFailure()
             }
@@ -184,6 +214,14 @@ class MainScreenFragment : BaseFragment() {
                 ).show()
 
                 sayAdapterLoadDataFailure()
+            }
+
+            is Failure.RequestIsEmptyOrOld -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.request_empty_or_old),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             is Failure.ListEmpty -> {
