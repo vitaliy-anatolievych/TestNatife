@@ -13,6 +13,7 @@ import com.testtask.testnatife.core.type.Failure
 import com.testtask.testnatife.core.type.None
 import com.testtask.testnatife.core.viewmodels.onFailure
 import com.testtask.testnatife.core.viewmodels.onSuccess
+import com.testtask.testnatife.core.viewmodels.onSuccessOnce
 import com.testtask.testnatife.databinding.FragmentMainScreenBinding
 import com.testtask.testnatife.domain.models.ImageModel
 import com.testtask.testnatife.presentation.adapters.ImagesRVAdapter
@@ -23,6 +24,7 @@ import com.testtask.testnatife.presentation.adapters.utils.LoadMoreViewVertical
 import com.testtask.testnatife.presentation.adapters.utils.RVAdapterMapper
 import com.testtask.testnatife.presentation.contracts.navigator
 import com.testtask.testnatife.presentation.core.BaseFragment
+import com.testtask.testnatife.presentation.debugPrint
 import com.testtask.testnatife.presentation.hideKeyboard
 import com.testtask.testnatife.presentation.viewmodels.MainViewModel
 
@@ -41,7 +43,7 @@ class MainScreenFragment : BaseFragment() {
 
         mainViewModel = viewModel {
             onSuccess(addToBlackListData, ::handleBlackList)
-            onSuccess(imagesData, ::handleImages)
+            onSuccessOnce(imagesData, ::handleImages)
             onFailure(failureData, ::handleFailure)
         }
     }
@@ -85,8 +87,14 @@ class MainScreenFragment : BaseFragment() {
         (query.isNotEmpty() && mainViewModel.currentQuery != query)
 
     private fun settingsAdapter() {
-        imageAdapter = ImagesRVAdapter()
+        imageAdapter = mainViewModel._stateAdapter.value ?: ImagesRVAdapter()
         binding.rvMainScreen.adapter = imageAdapter
+
+        // Restore Adapter State
+        mainViewModel._stateRecyclerView.value?.let {
+            binding.rvMainScreen.layoutManager?.onRestoreInstanceState(it)
+        }
+
         imageAdapter.setDiffCallback(ImageListDiffCallBack())
 
         imageAdapter.loadMoreModule.loadMoreView = LoadMoreViewVertical()
@@ -94,7 +102,7 @@ class MainScreenFragment : BaseFragment() {
         imageAdapter.loadMoreModule.isAutoLoadMore = true
         imageAdapter.loadMoreModule.setOnLoadMoreListener { loadMore() }
         imageAdapter.deleteImage { addToBlackList(image = it) }
-        imageAdapter.onImageClicked { openImageFullSize(image = it) }
+        imageAdapter.onImageClicked { openImageFullSize() }
     }
 
     private fun handleImages(images: List<ImageModel>?) {
@@ -108,11 +116,19 @@ class MainScreenFragment : BaseFragment() {
                     showLoadProgress(isStateLoad = false)
                     val linkedList = mutableListOf<ImageRVModel>()
                     if (mainViewModel.isNextData) {
-                        linkedList.addAll(RVAdapterMapper.mapListImageModelToListImageRVModel(newList))
+                        linkedList.addAll(
+                            RVAdapterMapper.mapListImageModelToListImageRVModel(
+                                newList
+                            )
+                        )
                         binding.rvMainScreen.smoothScrollToPosition(RecyclerView.SCROLL_INDICATOR_TOP)
                     } else {
                         linkedList.addAll(imageAdapter.data)
-                        linkedList.addAll(RVAdapterMapper.mapListImageModelToListImageRVModel(newList))
+                        linkedList.addAll(
+                            RVAdapterMapper.mapListImageModelToListImageRVModel(
+                                newList
+                            )
+                        )
                     }
                     imageAdapter.setDiffNewData(linkedList.distinctBy { it.id }.toMutableList())
                     sayAdapterLoadDataSuccessful()
@@ -129,8 +145,8 @@ class MainScreenFragment : BaseFragment() {
         ).show()
     }
 
-    private fun openImageFullSize(image: ImageRVModel) {
-        navigator().goToFullScreenImage(image)
+    private fun openImageFullSize() {
+//        navigator().goToFullScreenImage(binding.rvMainScreen.adapter as ImagesRVAdapter)
     }
 
     private fun addToBlackList(image: ImageRVModel) {
@@ -182,6 +198,12 @@ class MainScreenFragment : BaseFragment() {
                 sayAdapterLoadDataFailure()
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mainViewModel._stateAdapter.value = imageAdapter
+        mainViewModel._stateRecyclerView.value = binding.rvMainScreen.layoutManager?.onSaveInstanceState()
     }
 
     private fun sayAdapterLoadDataSuccessful() {
