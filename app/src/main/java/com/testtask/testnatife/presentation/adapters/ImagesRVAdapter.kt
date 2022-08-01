@@ -25,13 +25,13 @@ class ImagesRVAdapter:
     @IgnoredOnParcel
     private var onImageClicked: (() -> Unit)? = null
 
-    inner class ImagesVewHolder(view: View): BaseViewHolder(view) {
+    inner class ImagesVewHolder(val view: View): BaseViewHolder(view) {
         private val imageView = view.findViewById<ImageView>(R.id.iv_image_item)
         private val deleteButton = view.findViewById<ImageButton>(R.id.imb_delete_image)
 
         fun bind(image: ImageRVModel) {
 
-            Glide.with(imageView.context)
+            Glide.with(view.rootView)
                 .load(image.imageUrl)
                 .centerCrop()
                 .into(imageView)
