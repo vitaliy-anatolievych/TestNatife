@@ -197,12 +197,6 @@ class MainScreenFragment : BaseFragment() {
                     Toast.LENGTH_SHORT
                 ).show()
 
-                val query = binding.etSearchImage.text.toString()
-
-                if (isNewQueryValid(query)) {
-                    mainViewModel.loadImagesFromCache(query = query)
-                }
-
                 sayAdapterLoadDataFailure()
             }
             is Failure.RequestFailure -> {
@@ -211,7 +205,11 @@ class MainScreenFragment : BaseFragment() {
                     getString(R.string.network_connection_error),
                     Toast.LENGTH_SHORT
                 ).show()
+                val query = binding.etSearchImage.text.toString()
 
+                if (isNewQueryValid(query)) {
+                    mainViewModel.loadImagesFromCache(query = query)
+                }
                 sayAdapterLoadDataFailure()
             }
             is Failure.ServerError -> {
