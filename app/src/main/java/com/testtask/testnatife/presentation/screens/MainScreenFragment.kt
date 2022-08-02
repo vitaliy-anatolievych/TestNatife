@@ -30,6 +30,7 @@ import com.testtask.testnatife.presentation.core.BaseFragment
 import com.testtask.testnatife.presentation.debugPrint
 import com.testtask.testnatife.presentation.hideKeyboard
 import com.testtask.testnatife.presentation.viewmodels.MainViewModel
+import kotlin.properties.Delegates
 
 class MainScreenFragment : BaseFragment() {
 
@@ -40,7 +41,7 @@ class MainScreenFragment : BaseFragment() {
         get() = _binding ?: throw NullPointerException("FragmentMainScreenBinding is null")
 
     private lateinit var imageAdapter: ImagesRVAdapter
-    private var isNetworkAvailable = true
+    private var isNetworkAvailable: Boolean by Delegates.notNull<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +51,12 @@ class MainScreenFragment : BaseFragment() {
             onSuccessOnce(imagesData, ::handleImages)
             onFailure(failureData, ::handleFailure)
         }
+
+        checkNetworkState()
+    }
+
+    private fun checkNetworkState() {
+        isNetworkAvailable = NetworkStateListener.isOnline(this.requireContext())
 
         NetworkStateListener.networkState = { networkState ->
             requireContext().debugPrint("$networkState")
@@ -81,6 +88,7 @@ class MainScreenFragment : BaseFragment() {
             when (actionId) {
                 EditorInfo.IME_ACTION_SEARCH -> {
                     val query = textView.text.toString()
+
                     if (isNewQueryValid(query)) {
                         makeRequest(textView)
                     } else {
@@ -103,7 +111,7 @@ class MainScreenFragment : BaseFragment() {
     }
 
     private fun isNewQueryValid(query: String) =
-        (query.isNotEmpty() && imageAdapter.data.isEmpty() && query != mainViewModel.currentQuery)
+        (query.isNotEmpty() && query != mainViewModel.currentQuery)
 
     private fun settingsAdapter() {
         imageAdapter = mainViewModel._stateAdapter.value ?: ImagesRVAdapter()
@@ -152,7 +160,7 @@ class MainScreenFragment : BaseFragment() {
                             )
                         )
                     }
-                    imageAdapter.setDiffNewData(linkedList.toMutableList())
+                    imageAdapter.setDiffNewData(linkedList.distinctBy { it.id } .toMutableList())
                     sayAdapterLoadDataSuccessful()
                 }
             }
@@ -222,6 +230,7 @@ class MainScreenFragment : BaseFragment() {
                     getString(R.string.request_empty_or_old),
                     Toast.LENGTH_SHORT
                 ).show()
+
             }
 
             is Failure.ListEmpty -> {
